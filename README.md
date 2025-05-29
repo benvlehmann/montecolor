@@ -40,12 +40,8 @@ pip install .
 import numpy as np
 from montecolor import Palette
 
-# Create a 6-color palette with white background
-palette = Palette(
-    size=6, 
-    fixed_colors=[[255, 255, 255]],  # White background
-    index=-1  # Cost = 1/distance
-)
+# Create a 6-color palette including a white background as a fixed color
+palette = Palette(6)
 
 # Generate optimized colors using MCMC
 optimized_palette = palette.generate(
@@ -81,19 +77,6 @@ MonteColor simulates four vision types:
 4. **Weighted Aggregation**: Combines costs across vision types using configurable weights
 5. **Optimization**: Uses MCMC or direct optimization to maximize color discrimination
 
-### Palette Class
-
-The main `Palette` class manages both fixed and variable colors:
-
-```python
-palette = Palette(
-    size=8,                           # Total colors (fixed + variable)
-    fixed_colors=[[255, 255, 255]],   # Background/fixed colors  
-    cvd_matrix=None,                  # Custom CVD transformation matrix
-    index=-1,                         # Power-law exponent for costs
-    pair_matrix=None                  # Custom weighting between color pairs
-)
-```
 
 ## Advanced Usage
 
@@ -112,15 +95,15 @@ palette.generate(
     num_walkers=50,
     num_steps=500, 
     mcmc=True,
-    moves=[(emcee.moves.DEMove(), 0.8), (emcee.moves.DESnookerMove(), 0.2)]
+    sampler_kwargs=dict(
+        moves=[(emcee.moves.DEMove(), 0.8), (emcee.moves.DESnookerMove(), 0.2)]
+    )
 )
 ```
 
 ### Custom CVD Weighting
 
 ```python
-import numpy as np
-
 # Emphasize deuteranomaly (most common CVD)
 weight_matrix = np.identity(4)
 weight_matrix[1, 1] = 2.0  # Double weight for deuteranomaly comparisons
@@ -131,7 +114,7 @@ palette = Palette(size=5, pair_matrix=weight_matrix)
 ### Color Distance Analysis
 
 ```python
-from montecolor.color_utils import distance_matrix, cost_matrix, weighted_cost
+from montecolor.distance import distance_matrix, cost_matrix, weighted_cost
 
 # Analyze specific color pairs
 red = [255, 0, 0]
@@ -142,10 +125,10 @@ distances = distance_matrix(red, green)
 print(f"Distance matrix shape: {distances.shape}")  # (4, 4, 1)
 
 # Convert to optimization costs
-costs = cost_matrix(distances, index=-1)
+costs = cost_matrix(distances)
 
 # Get weighted average cost
-avg_cost = weighted_cost(red, green, index=-1)
+avg_cost = weighted_cost(red, green)
 print(f"Average discrimination cost: {avg_cost:.3f}")
 ```
 
@@ -188,10 +171,6 @@ MonteColor is built on established color science principles:
 
 The optimization maximizes the minimum pairwise color difference across all vision types, ensuring no two colors become indistinguishable for any form of color vision.
 
-## Contributing
-
-We welcome contributions! Please see our contributing guidelines and submit issues or pull requests on GitHub.
-
 ## License
 
 MIT License - see LICENSE file for details.
@@ -202,10 +181,10 @@ If you use MonteColor in academic work, please cite:
 
 ```bibtex
 @software{montecolor,
-  title={MonteColor: Colorblind-Safe Palette Generation},
-  author={[Your Name]},
+  title={MonteColor},
+  author={Benjamin V. Lehmann},
   year={2025},
-  url={https://github.com/[username]/montecolor}
+  url={https://github.com/benvlehmann/montecolor}
 }
 ```
 
