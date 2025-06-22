@@ -181,8 +181,8 @@ If you use MonteColor in academic work, please cite:
 
 ```bibtex
 @software{montecolor,
-  title={MonteColor},
-  author={Benjamin V. Lehmann},
+  title="{MonteColor}",
+  author="{Benjamin V. Lehmann}",
   year={2025},
   url={https://github.com/benvlehmann/montecolor}
 }
